@@ -5,7 +5,7 @@ function App() {
   const [userInput, setUserInput] = useState<string>("");
   const [randomNumGen, setRandomNumGen] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
-
+  const [attempt, setAttempt] = useState<number>(0);
   const toastOptions: Parameters<typeof toast.info>[1] = {
     position: "top-right",
     autoClose: 5000,
@@ -28,14 +28,24 @@ function App() {
 
   const resetGame = () => {
     generateRandomNumber();
+    setAttempt(0);
     setUserInput("");
     setMessage("");
   };
 
   const guessNumber = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (attempt === 8) {
+      toast.error("You have run out of attempts!", toastOptions);
+      setMessage("Please reset the game.");
+      setUserInput("");
+      return;
+    } else {
+      setAttempt((pre) => {
+        return pre + 1;
+      });
+    }
     const parsedInput = parseInt(userInput, 10);
-
     if (isNaN(parsedInput)) {
       toast.error("Please enter a valid number!", toastOptions);
       setMessage("");
@@ -110,6 +120,13 @@ function App() {
           {message}
         </p>
         <ToastContainer />
+
+        <p
+          className="absolute bottom-[3%] left-12 border-2
+         p-2 rounded-md shadow-black bg-black text-white text-xl  sm:text-2xl md:text-3xl font-thin text-center"
+        >
+          Attempts {8 - attempt}
+        </p>
       </div>
     </section>
   );
